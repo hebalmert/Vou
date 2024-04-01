@@ -91,21 +91,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ClockSkew = TimeSpan.Zero
     });
 
-//Agregamos Tipo de Claim para validar tipo de usuarios por Web API
-//los mismo que usamos en los Roles MVC se declaran en el Claims Web API Role
-builder.Services.AddAuthorization(option =>
-{
-    option.AddPolicy(UserType.Admin.ToString(), x => x.RequireClaim(UserType.Admin.ToString()));
-    option.AddPolicy(UserType.User.ToString(), x => x.RequireClaim(UserType.User.ToString()));
-    option.AddPolicy(UserType.Technical.ToString(), x => x.RequireClaim(UserType.Technical.ToString()));
-    option.AddPolicy(UserType.UserAux.ToString(), x => x.RequireClaim(UserType.UserAux.ToString()));
-    option.AddPolicy(UserType.Cachier.ToString(), x => x.RequireClaim(UserType.Cachier.ToString()));
-});
-
 builder.Services.AddTransient<SeedDb>();
 builder.Services.AddScoped<IAPIService, APIService>();
 builder.Services.AddScoped<IComboHelper, ComboHelper>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
+builder.Services.AddScoped<IEmailHelper, EmailHelper>();
+builder.Services.AddScoped<IFileStorage, FileStorage>();
 
 
 //Inicio de Area de los Serviciios

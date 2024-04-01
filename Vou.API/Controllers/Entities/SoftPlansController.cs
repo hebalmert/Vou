@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Vou.API.Data;
 using Vou.Shared.Entities;
 
 namespace Vou.API.Controllers.Entities
 {
-    [Route("api/[controller]")]
+    [Route("api/softplan")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ApiController]
     public class SoftPlansController : ControllerBase
     {

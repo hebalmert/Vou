@@ -12,7 +12,7 @@ using Vou.API.Data;
 namespace Vou.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240330020735_InitialDb")]
+    [Migration("20240401023749_InitialDb")]
     partial class InitialDb
     {
         /// <inheritdoc />

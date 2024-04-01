@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Vou.Shared.Enum;
 
 namespace Vou.Shared.Entities
@@ -23,7 +24,6 @@ namespace Vou.Shared.Entities
         [Display(Name = "Puesto Trabajo")]
         public string Job { get; set; } = null!;
 
-
         //Identificacion de Origenes y Role del Usuario
         [Display(Name = "Origen")]
         public string? UserFrom { get; set; }
@@ -35,10 +35,14 @@ namespace Vou.Shared.Entities
         [Display(Name = "Imagen")]
         public string? Photo { get; set; }
 
+        [NotMapped]
+        [Display(Name = "FullPath")]
+        public string? PhotoPath { get; set; }
+
         //TODO:Change Addres to Image
         public string ImageFullPath => Photo == string.Empty || Photo == null
-        ? $"https://localhost:7160/Images/NoImage.png"
-        : $"https://localhost:7160/Images/ImgUser/{Photo}";
+        ? $"https://localhost:7246/Images/NoImage.png"
+        : $"https://localhost:7246/Images/ImgUser/{Photo}";
         //? $"https://spi.nexxtplanet.net/Images/NoImage.png"
         //: $"https://spi.nexxtplanet.net/Images/ImgUser/{Photo}";
 
