@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Vou.API.Data;
+using Vou.API.Helper;
 using Vou.Shared.Entities;
+using Vou.Shared.Pagination;
 
 namespace Vou.API.Controllers.Entities
 {
@@ -21,9 +23,22 @@ namespace Vou.API.Controllers.Entities
 
         // GET: api/SoftPlans
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SoftPlan>>> GetSoftPlans()
+        public async Task<ActionResult<List<SoftPlan>>> GetSoftPlans([FromQuery] PaginationDTO pagination)
         {
-            return await _context.SoftPlans.ToListAsync();
+            if (string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                var queryable = _context.SoftPlans.AsQueryable();
+
+                await HttpContext.InsertParameterPaginationResponse(queryable, pagination.RecordsNumber);
+                return Ok(await queryable.OrderBy(x => x.Name).Paginate(pagination).ToListAsync());
+            }
+            else 
+            {
+                var queryable = _context.SoftPlans.Where(x=> x.Name.ToLower().Contains(pagination.Filter.ToLower())).AsQueryable();
+
+                await HttpContext.InsertParameterPaginationResponse(queryable, pagination.RecordsNumber);
+                return Ok(await queryable.OrderBy(x => x.Name).Paginate(pagination).ToListAsync());
+            }
         }
 
         // GET: api/SoftPlans/5

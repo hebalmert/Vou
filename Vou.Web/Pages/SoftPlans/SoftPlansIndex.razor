@@ -1,0 +1,216 @@
+﻿@attribute [Authorize(Roles = "Admin")]
+@page "/SoftPlan"
+@inject IRepository _repository
+@inject SweetAlertService _Swal
+@inject NavigationManager _navigation
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md-12">
+            <div class="card card-roud">
+                <div class="card-body">
+                    <p>
+                        <h2>Software Planes</h2>
+                    </p>
+                    <hr style="height:1px;border:none;color:#333;background-color:#333;" />
+                    <br />
+
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="input-group-append">
+                                    <a class="btn btn-outline-primary btn-bor" href="/countries/create">
+                                        <i class="bi bi-plus-square" style="font-size: 20px;"></i>
+                                        Nuevo
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-9 mb-5">
+                                <div class="input-group input-group-dropdown btn-borCua">
+                                    <input type="text" class="form-control btn-bor" style="text-align: left" @bind-value="Filter"
+                                           autocomplete="off" spellcheck="false" placeholder="Buscar..." />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-dark btn-bor" @onclick="ApplyFilterAsync">
+                                            <i class="bi bi-search" style="font-size: 20px;"></i>
+                                            Filtrar
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-bor" @onclick="CleanFilterAsync">
+                                            <i class="bi bi-arrow-clockwise" style="font-size: 20px;"></i>
+                                            Limpiar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            @if (ListSoftPlan is null)
+                            {
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="spinner-container justify-content-center align-items-center">
+                                            <div class="spinner"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <GenericList MyList="ListSoftPlan">
+                                    <Body>
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Plan</th>
+                                                    <th>Max Mikortik</th>
+                                                    <th>Meses</th>
+                                                    <th>Precio</th>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in ListSoftPlan!)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @item.Name
+                                                        </td>
+                                                        <td>
+                                                            @item.MaxMikrotik
+                                                        </td>
+                                                        <td>
+                                                            @item.TimeMonth
+                                                        </td>
+                                                        <td>
+                                                            @item.Price
+                                                        </td>
+                                                        <td style="width:1px; padding-left:1px; padding-right:4px">
+                                                            <a title="Editar" class="btn btn-outline-dark btn-bor btn-sm" href="/SoftPlan/edit/@item.SoftPlanId">
+                                                                <i class="bi bi-pencil-square" style="font-size: 17px;"></i>
+                                                            </a>
+                                                        </td>
+                                                        <td style="width:1px; padding-left:1px; padding-right:4px">
+                                                            <a title="Detalle" class="btn btn-outline-dark btn-bor btn-sm" href="/SoftPlan/details/@item.SoftPlanId">
+                                                                <i class="bi bi-card-text" style="font-size: 17px;"></i>
+                                                            </a>
+                                                        </td>
+                                                        <td style="width:1px; padding-left:1px; padding-right:4px">
+                                                            <button title="Borrar" class="btn btn-outline-danger btn-bor btn-sm" @onclick="@( () => DeleteAsync(item.SoftPlanId) )">
+                                                                <i class="bi bi-trash" style="font-size: 17px;"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </Body>
+                                </GenericList>
+
+
+                            }
+                        </div>
+                    </div>
+                    <br />
+                    <Paginacion CurrentPage="currentPage"
+                                TotalPages="totalPages"
+                                SelectedPage="SelectedPage">
+                    </Paginacion>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    //Para Manejo de Paginacion
+    private int currentPage = 1;
+    private int totalPages;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Filter { get; set; } = "";
+
+    public List<SoftPlan>? ListSoftPlan { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSync();
+    }
+
+    private async Task CleanFilterAsync()
+    {
+        Filter = string.Empty;
+        await ApplyFilterAsync();
+    }
+
+    private async Task ApplyFilterAsync()
+    {
+        int page = 1;
+        await LoadSync(page);
+        await SelectedPage(page);
+    }
+
+
+    private async Task SelectedPage(int page)
+    {
+        currentPage = page;
+        await LoadSync(page);
+    }
+
+    private async Task LoadSync(int page = 1)
+    {
+        try
+        {
+            // await Task.Delay(3000);
+            var respuestaHttp = await _repository.Get<List<SoftPlan>>($"/api/softplan?page={page}&filter={Filter}");
+            totalPages = int.Parse(respuestaHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+            ListSoftPlan = respuestaHttp.Response;
+
+        }
+        catch (Exception ex)
+        {
+
+            await _Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+            return;
+        }
+
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        var result = await _Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmacion",
+                Text = "Desea Eliminar el Registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si"
+
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await _repository.Delete($"/api/countries/{id}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
+            {
+                var messageError = await responseHttp.GetErrorMessageAsync();
+                await _Swal.FireAsync("Error", messageError, SweetAlertIcon.Error);
+                return;
+            }
+        }
+
+        await LoadSync();
+    }
+}

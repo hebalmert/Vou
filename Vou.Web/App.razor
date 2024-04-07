@@ -1,12 +1,45 @@
 ﻿<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        @*         Este es el original, pero cambiamos a AuthorizeRouteView para que permita manejar autenticacion *@
+        @*         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" /> *@
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <Authorizing>
+                @* Estamos mandando el mensaje cuando se esta cargando *@
+                <p>Autorizando Cargue</p>
+            </Authorizing>
+            <NotAuthorized>
+
+                <div class="container-fluid">
+                    <div class="row justify-content-center" style="margin-top: 5rem;">
+                        <div class="col-8">
+                            <div class="card card-roud">
+                                <div class="card-body">
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="col-6 text-center">
+                                            <img src="ErrorPage.png" alt="image" style="width:150px;height:100px; max-width: 100%; height: auto;" />
+                                        </div>
+                                        <div class="col-6">
+                                            <h5>Sin Permisos para acceder a este recurso.</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+          
+
+            </NotAuthorized>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
+        <CascadingAuthenticationState>
+            @* Se Agrega esta Etiqueta para Manejar Autenticacion de Usuarios *@
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </CascadingAuthenticationState>
     </NotFound>
 </Router>

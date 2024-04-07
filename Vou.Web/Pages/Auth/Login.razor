@@ -1,0 +1,69 @@
+﻿@page "/Login"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+@inject ILoginService loginService
+
+
+<div class="contenedor mt-5">
+    <div class="row" style="width: 450px; margin-left: auto; margin-right:auto;">
+        <div class="col-md-12">
+            <div class="shadow-lg mb-5 card-roud">
+                <div class="card card-roud">
+                    <EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
+                        <DataAnnotationsValidator />
+                        <div class="card-header justify-content-center">
+                            <br />
+                            <div class="row" style="width: 400px; margin-left: auto; margin-right:auto; ">
+                                <img src="logo.png" alt="Image" style="width:100px;height:100px;max-width: 100%; height: auto;" />
+                            </div>
+                            <h2 style="color:darkblue">Sistema de Acceso</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-floating mb-3">
+                                    <InputText class="form-control" @bind-Value="@loginDTO.Email" id="floatingInput" placeholder="name@example.com" />
+                                    <label for="floatingInput">Email address</label>
+                                    <ValidationMessage For="@(() => loginDTO.Email)" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-floating mb-3">
+                                    <InputText type="password" class="form-control" @bind-Value="@loginDTO.Password" id="floatingPassword" placeholder="Password" />
+                                    <label for="floatingPassword">Password</label>
+                                    <ValidationMessage For="@(() => loginDTO.Password)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            @* <a class="bbtn btn-link" href="/ResendToken">Reenviar correro de activación de cuenta</a> *@
+                            <p>
+                                <button class="btn btn-outline-primary btn-bor" type="submit"><i class="oi oi-check" /> Iniciar Sesión</button>
+                                <a class="btn btn-outline-danger btn-bor " href="/RecoverPassword">¿Recuperar contraseña?</a>
+                            </p>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginDTO loginDTO = new();
+
+    private async Task LoginAsync()
+    {
+        var responseHttp = await repository.Post<LoginDTO, TokenDTO>("/api/accounts/Login", loginDTO);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await loginService.LoginAsync(responseHttp.Response!.Token);
+        navigationManager.NavigateTo("/");
+    }
+}
+

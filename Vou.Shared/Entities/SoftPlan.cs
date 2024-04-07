@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Vou.Shared.Entities
 {
@@ -19,7 +18,6 @@ namespace Vou.Shared.Entities
         public int MaxMikrotik { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:C2}")]
-        [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "Precio")]
         public decimal Price { get; set; }
 

@@ -104,24 +104,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.WithOrigins("https://localhost:7219") // dominio de tu aplicación Blazor
+        builder.WithOrigins("https://localhost:7105") // dominio de tu aplicación Blazor
                .AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders(new string[] { "Totalpages", "conteo" });
     });
 });
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin", builder =>
-    {
-        builder.WithOrigins("https://localhost:7219") // dominio de tu aplicación Blazor
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .WithExposedHeaders(new string[] { "Totalpages", "conteo" });
-    });
-});
-
 
 var app = builder.Build();
 //Implementacion del SeedDb para llenado de Base de datos y Otros

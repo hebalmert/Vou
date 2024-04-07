@@ -19,7 +19,7 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-image: url('../Images/bg2.jpg');
+   background-image: url('../bgOriginal.jpg');
     background-attachment: fixed;
     background-position: center;
     background-size: cover;

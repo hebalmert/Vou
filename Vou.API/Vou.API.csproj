@@ -22,12 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Images\ImgUser\" />
-    <Folder Include="wwwroot\Images\ImgCachier\" />
-    <Folder Include="wwwroot\Images\ImgCompany\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Vou.Shared\Vou.Shared.csproj" />
   </ItemGroup>
 
